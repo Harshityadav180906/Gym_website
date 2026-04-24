@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DD.WORLD | Fitness Gym</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #00d4ff; 
+            --bg: #050505;
+            --card-bg: #111;
+            --text: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* --- NAVIGATION --- */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 10%;
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(5, 5, 5, 0.8);
+            backdrop-filter: blur(15px);
+            transition: 0.4s;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.8rem;
+            text-decoration: none;
+            color: white;
+            font-weight: 700;
+        }
+
+        .logo span { color: var(--primary); }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover { color: var(--primary); }
+
+        .btn-nav {
+            padding: 0.7rem 1.8rem;
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+
+        .btn-nav:hover { background: var(--primary); color: black; }
+
+        /* --- MODAL (POPUP FORM) --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.95); display: flex; justify-content: center; align-items: center;
+            z-index: 2000; opacity: 0; pointer-events: none; transition: 0.4s ease;
+        }
+
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .form-container {
+            background: #111; padding: 40px; width: 95%; max-width: 450px;
+            border-radius: 15px; border: 1px solid var(--primary); position: relative;
+            transform: scale(0.8); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .modal-overlay.active .form-container { transform: scale(1); }
+
+        .close-btn {
+            position: absolute; top: 15px; right: 20px; font-size: 2rem; color: #555;
+            cursor: pointer; border: none; background: none; transition: 0.3s;
+        }
+        .close-btn:hover { color: var(--primary); }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 0.8rem; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+        .form-group input, .form-group select {
+            width: 100%; padding: 12px; background: #1a1a1a; border: 1px solid #333; color: white; border-radius: 5px; outline: none; transition: 0.3s;
+        }
+        .form-group input:focus { border-color: var(--primary); }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), 
+                        url('https://images.unsplash.com/photo-1540497077202-7c8a3999166f?auto=format&fit=crop&q=80') center/cover;
+            display: flex; align-items: center; padding: 0 10%;
+        }
+
+        .hero h1 {
+            font-family: 'Oswald', sans-serif;
+            font-size: clamp(3.5rem, 10vw, 6.5rem);
+            line-height: 0.9;
+            text-transform: uppercase;
+        }
+
+        .hero h1 span { display: block; color: transparent; -webkit-text-stroke: 1.5px var(--primary); }
+
+        .btn-main {
+            display: inline-block; padding: 1.2rem 3rem; background: var(--primary); color: black;
+            text-decoration: none; font-weight: 800; text-transform: uppercase; cursor: pointer; border: none;
+            transition: 0.4s;
+        }
+
+        .btn-main:hover { letter-spacing: 2px; box-shadow: 0 0 30px rgba(0, 212, 255, 0.4); }
+
+        /* --- FEATURES --- */
+        .features { padding: 120px 10%; text-align: center; }
+        .section-tag { color: var(--primary); font-weight: 600; text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 10px; }
+        .section-title { font-family: 'Oswald', sans-serif; font-size: 3.5rem; margin-bottom: 60px; text-transform: uppercase; }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+        .card { background: var(--card-bg); padding: 4rem 2rem; border-bottom: 4px solid transparent; transition: 0.4s; }
+        .card:hover { transform: translateY(-10px); border-color: var(--primary); }
+        .card h3 { margin-bottom: 15px; letter-spacing: 1px; color: var(--primary); }
+
+        /* --- ABOUT --- */
+        .about { padding: 120px 10%; background: #080808; }
+        .about-container { display: flex; align-items: center; gap: 80px; flex-wrap: wrap; }
+        .about-image { flex: 1; min-width: 380px; }
+        .about-image img { width: 100%; border-radius: 10px; filter: brightness(0.8); transition: 0.5s; }
+        .about-image:hover img { filter: brightness(1); }
+        
+        .about-text { flex: 1; min-width: 380px; }
+        .check-list { list-style: none; margin-top: 30px; }
+        .check-list li { margin-bottom: 15px; display: flex; align-items: center; gap: 15px; font-weight: 600; }
+        .check-list i { color: var(--primary); font-style: normal; }
+
+        /* --- JOIN NOW --- */
+        .join-now { padding: 120px 10%; text-align: center; background: #000; border-top: 1px solid #111; }
+        .pulse { animation: pulse-animation 2s infinite; }
+        @keyframes pulse-animation {
+            0% { box-shadow: 0 0 0 0px rgba(0, 212, 255, 0.4); }
+            70% { box-shadow: 0 0 0 20px rgba(0, 212, 255, 0); }
+            100% { box-shadow: 0 0 0 0px rgba(0, 212, 255, 0); }
+        }
+
+        /* --- SCROLL REVEAL --- */
+        .reveal, .reveal-left, .reveal-bottom { opacity: 0; transition: all 1s cubic-bezier(0.2, 1, 0.3, 1); }
+        .reveal-left { transform: translateX(-80px); }
+        .reveal-bottom { transform: translateY(80px); }
+        .active { opacity: 1; transform: translateX(0) translateY(0); }
+
+        .footer { padding: 60px; text-align: center; border-top: 1px solid #111; color: #444; font-size: 0.9rem; }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .about-container { flex-direction: column-reverse; }
+            .section-title { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="form-container">
+            <button class="close-btn" id="closeForm">&times;</button>
+            <h2 style="font-family: 'Oswald'; color: var(--primary); margin-bottom: 10px;">DD.WORLD REGISTRATION</h2>
+            <p style="color: #666; font-size: 0.85rem; margin-bottom: 25px;">Start your global fitness journey today.</p>
+            
+            <form id="trainingForm">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" name="Name" placeholder="Your Name" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" value="+91" style="width: 60px; text-align: center; color: var(--primary); font-weight: bold;" readonly>
+                        <input type="tel" name="Phone" placeholder="9876543210" pattern="[0-9]{10}" title="Enter 10 digits" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" name="Email" placeholder="example@gmail.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Training Program</label>
+                    <select name="Program">
+                        <option>Global Strength</option>
+                        <option>Endurance X</option>
+                        <option>Hybrid Flow</option>
+                    </select>
+                </div>
+
+                <button type="submit" id="submitBtn" class="btn-main" style="width:100%; margin-top: 10px;">Send Application</button>
+            </form>
+        </div>
+    </div>
+
+    <nav class="navbar" id="navbar">
+        <a href="#" class="logo">DD.<span>WORLD</span></a>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#features">Programs</a></li>
+            <li><a href="#about">About</a></li>
+            <li><button class="btn-nav open-form-btn">Join Now</button></li>
+        </ul>
+    </nav>
+
+    <header id="home" class="hero">
+        <div class="hero-content reveal-left active">
+            <span class="section-tag">Welcome to the future</span>
+            <h1>EVOLVE YOUR <span>STRENGTH</span></h1>
+            <p style="max-width: 500px; margin-bottom: 20px;">Experience world-class training facilities designed for the elite athlete in you.</p>
+            <button class="btn-main open-form-btn">Start Training Now</button>
+        </div>
+    </header>
+
+    <section id="features" class="features">
+        <span class="section-tag">Our Disciplines</span>
+        <h2 class="section-title reveal">Training Programs</h2>
+        <div class="grid">
+            <div class="card reveal-bottom">
+                <h3>01. STRENGTH</h3>
+                <p>Pure powerlifting and strength conditioning using Olympic-grade equipment.</p>
+            </div>
+            <div class="card reveal-bottom" style="transition-delay: 0.2s;">
+                <h3>02. ENDURANCE</h3>
+                <p>High-intensity cardiovascular training to build unmatched stamina and grit.</p>
+            </div>
+            <div class="card reveal-bottom" style="transition-delay: 0.4s;">
+                <h3>03. RECOVERY</h3>
+                <p>Professional mobility sessions and sports massage for total muscle longevity.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="about">
+        <div class="about-container">
+            <div class="about-image reveal-left">
+                <img src="https://images.unsplash.com/photo-1593079831268-3381b0db4a77?auto=format&fit=crop&q=80" alt="DD World Interior">
+            </div>
+            <div class="about-text reveal-bottom">
+                <span class="section-tag">Elite Standards</span>
+                <h2 class="section-title">THE DD.WORLD WAY</h2>
+                <p>DD.WORLD isn't just a gym; it's a global ecosystem for human performance. We provide the atmosphere where excuses die and results are born.</p>
+                <ul class="check-list">
+                    <li><i>✔</i> AI-Driven Progress Tracking</li>
+                    <li><i>✔</i> Certified International Master Trainers</li>
+                    <li><i>✔</i> Luxury Member-Only Lounge</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="join-now reveal">
+        <h2 class="section-title">READY TO START?</h2>
+        <p style="margin-bottom: 30px; color: #888; font-size: 1.1rem;">Sign up now to lock in your seasonal membership rate.</p>
+        <button class="btn-main pulse open-form-btn">Claim Membership</button>
+    </section>
+
+    <footer class="footer">
+        <p>&copy; 2026 DD.WORLD FITNESS GYM | New Delhi, India.</p>
+    </footer>
+
+    <script>
+        // --- FORM SUBMISSION LOGIC ---
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbx_yAATqUFNinSsX60cVQ-TTrc9YqJ0NDEiRmglvjtc6jsZ_J3OuWIxF58Uzy7DMFGXyw/exec';
+        const form = document.getElementById('trainingForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const overlay = document.getElementById('modalOverlay');
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Sending Data...";
+
+            fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+                .then(response => {
+                    alert("Success! Your application has been sent to DD.WORLD.");
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = "Send Application";
+                    form.reset();
+                    overlay.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                })
+                .catch(error => {
+                    console.error('Error!', error.message);
+                    alert("Submission failed. Please check your internet and try again.");
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = "Send Application";
+                });
+        });
+
+        // --- UI LOGIC (MODAL & SCROLL) ---
+        const openBtns = document.querySelectorAll('.open-form-btn');
+        const closeBtn = document.getElementById('closeForm');
+
+        openBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+        });
+
+        const closeForm = () => {
+            overlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        };
+
+        closeBtn.addEventListener('click', closeForm);
+        window.addEventListener('click', (e) => { if (e.target === overlay) closeForm(); });
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, { threshold: 0.15 });
+
+        document.querySelectorAll('.reveal, .reveal-left, .reveal-bottom').forEach(el => observer.observe(el));
+
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 80) {
+                nav.style.padding = '1rem 10%';
+                nav.style.background = 'rgba(5, 5, 5, 0.98)';
+            } else {
+                nav.style.padding = '1.5rem 10%';
+                nav.style.background = 'rgba(5, 5, 5, 0.8)';
+            }
+        });
+    </script>
+</body>
+</html>
